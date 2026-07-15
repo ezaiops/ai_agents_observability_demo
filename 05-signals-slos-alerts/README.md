@@ -8,7 +8,7 @@ We demonstrate how to transform the Traces and Evaluations learned in previous c
 
 ## Prerequisites
 
-1. Prepare your `.env` file in the `src/` directory (an OpenAI-compatible API key is required).
+1. Prepare your `.env` file in the `src/` directory. An OpenAI-compatible API key is recommended for the LLM Judge step, but the script will gracefully degrade to a **MOCK Judge** mode if omitted, allowing the pure-Python rules (like loop detection) to still run!
 2. Dataset: We have prepared 4 highly typical production failure simulations in `data/sample_traces_en.json`:
    - `001`: Normal request.
    - `002`: False Success / Hallucination (combining Tool status with LLM Judge score).

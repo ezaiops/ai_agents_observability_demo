@@ -7,7 +7,7 @@
 ## 运行前提
 
 1. 在 `src/` 目录下复制一份 `.env.example` 为 `.env`，填入你的 API Key。**强烈建议**这里使用推理能力极强的模型（如 GPT-4o 或 DeepSeek-Chat）作为裁判。
-2. 数据集：我们在 `data/eval_dataset.json` 中准备了两条精简的 Trace 记录：
+2. 数据集：我们在 `data/eval_dataset_zh.json` 中准备了两条精简的 Trace 记录：
    - 001：正常退款成功。
    - 002：第 03 篇里那个工具报错但掩盖事实的“假成功”。
 

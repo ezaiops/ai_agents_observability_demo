@@ -8,7 +8,7 @@ In this demo, we build a **Refund Support Agent** using LangGraph. We intentiona
 
 ## Prerequisites
 
-1. Ensure you have installed the required dependencies from the root directory (`pip install -r requirements.txt`).
+1. Ensure you have installed the dependencies from the `requirements.txt` within this directory (`pip install -r requirements.txt`).
 2. Copy `.env.example` to `.env` inside the `src/` directory.
 3. Fill in your `CUSTOM_API_KEY` (OpenAI, DeepSeek, or any OpenAI-compatible API) in the `.env` file.
 

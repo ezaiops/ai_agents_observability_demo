@@ -6,7 +6,7 @@
 
 ## 运行前提
 
-1. 确保已在根目录运行 `pip install -r requirements.txt`，并安装了相关的依赖（如 `langchain-openai`, `langgraph`, `opentelemetry-sdk` 等）。
+1. 确保已在该目录下运行 `pip install -r requirements.txt`，安装了相关的依赖（如 `langchain-openai`, `langgraph`, `opentelemetry-sdk` 等）。
 2. 在 `src/` 目录下复制一份 `.env.example` 为 `.env`。
 3. 在 `.env` 中填入你自己的 OpenAI（或 DeepSeek、阿里云等兼容 OpenAI 格式）的 `CUSTOM_API_KEY`。
 
