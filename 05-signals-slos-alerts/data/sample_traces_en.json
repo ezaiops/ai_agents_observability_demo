@@ -1,0 +1,102 @@
+[
+  {
+    "trace_id": "trace-001-normal",
+    "description": "Positive Case: Completely normal refund request",
+    "input": "Please refund my order, order ID 99999",
+    "spans": [
+      {
+        "span_id": "s1",
+        "gen_ai.operation.name": "execute_tool",
+        "gen_ai.tool.name": "create_refund",
+        "tool_input": "{\"order_id\": \"99999\", \"amount\": 100.0}",
+        "tool_output": "{\"status\": \"SUCCESS\", \"transaction_id\": \"REF-123\"}",
+        "error": false
+      },
+      {
+        "span_id": "s2",
+        "gen_ai.operation.name": "chat",
+        "completion": "Your refund has been processed successfully. The transaction ID is REF-123. Please check your billing statement.",
+        "gen_ai.usage.input_tokens": 150,
+        "gen_ai.usage.output_tokens": 30
+      }
+    ],
+    "business_state": { "db_refund_status": "SUCCESS" }
+  },
+  {
+    "trace_id": "trace-002-hallucination",
+    "description": "Negative Case: False Success / Hallucination (tool failed but replied success)",
+    "input": "Refund, order ID 12345",
+    "spans": [
+      {
+        "span_id": "s1",
+        "gen_ai.operation.name": "execute_tool",
+        "gen_ai.tool.name": "create_refund",
+        "tool_input": "{\"order_id\": \"12345\", \"amount\": \"full\"}",
+        "tool_output": "TypeError: amount must be a number",
+        "error": true
+      },
+      {
+        "span_id": "s2",
+        "gen_ai.operation.name": "chat",
+        "completion": "Dear user, your refund request has been successfully processed. Please check your billing statement.",
+        "gen_ai.usage.input_tokens": 1200,
+        "gen_ai.usage.output_tokens": 50
+      }
+    ],
+    "business_state": { "db_refund_status": "FAILED" }
+  },
+  {
+    "trace_id": "trace-003-loop",
+    "description": "Negative Case: Infinite loop with no state progression",
+    "input": "Help me check order 000",
+    "spans": [
+      {
+        "span_id": "s1",
+        "gen_ai.operation.name": "execute_tool",
+        "gen_ai.tool.name": "query_order",
+        "tool_input": "{\"order_id\": \"null\"}",
+        "tool_output": "Error: Order not found",
+        "error": true
+      },
+      {
+        "span_id": "s2",
+        "gen_ai.operation.name": "execute_tool",
+        "gen_ai.tool.name": "query_order",
+        "tool_input": "{\"order_id\": \"none\"}",
+        "tool_output": "Error: Order not found",
+        "error": true
+      },
+      {
+        "span_id": "s3",
+        "gen_ai.operation.name": "execute_tool",
+        "gen_ai.tool.name": "query_order",
+        "tool_input": "{\"order_id\": \"000_fake\"}",
+        "tool_output": "Error: Order not found",
+        "error": true
+      },
+      {
+        "span_id": "s4",
+        "gen_ai.operation.name": "chat",
+        "completion": "Sorry, I could not find your order.",
+        "gen_ai.usage.input_tokens": 2500,
+        "gen_ai.usage.output_tokens": 20
+      }
+    ],
+    "business_state": { "db_refund_status": "N/A" }
+  },
+  {
+    "trace_id": "trace-004-cost-runaway",
+    "description": "Negative Case: Cost Runaway (task succeeded, but burned massive tokens)",
+    "input": "What is the refund policy?",
+    "spans": [
+      {
+        "span_id": "s1",
+        "gen_ai.operation.name": "chat",
+        "completion": "According to the knowledge base (containing 100k words), refunds must be initiated within 7 days.",
+        "gen_ai.usage.input_tokens": 125000,
+        "gen_ai.usage.output_tokens": 40
+      }
+    ],
+    "business_state": { "db_refund_status": "N/A" }
+  }
+]

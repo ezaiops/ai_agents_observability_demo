@@ -1,0 +1,21 @@
+# 环境变量与机密文件 (绝不能提交到 Git!)
+.env
+*.env
+.env.local
+
+# Python 缓存
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# 虚拟环境
+venv/
+env/
+.venv/
+
+# IDE 配置
+.vscode/
+.idea/
+*.swp

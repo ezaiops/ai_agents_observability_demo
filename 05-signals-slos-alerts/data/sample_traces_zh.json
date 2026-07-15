@@ -1,0 +1,102 @@
+[
+  {
+    "trace_id": "trace-001-normal",
+    "description": "正面案例：完全正常的退款请求",
+    "input": "请帮我退款，订单号 99999",
+    "spans": [
+      {
+        "span_id": "s1",
+        "gen_ai.operation.name": "execute_tool",
+        "gen_ai.tool.name": "create_refund",
+        "tool_input": "{\"order_id\": \"99999\", \"amount\": 100.0}",
+        "tool_output": "{\"status\": \"SUCCESS\", \"transaction_id\": \"REF-123\"}",
+        "error": false
+      },
+      {
+        "span_id": "s2",
+        "gen_ai.operation.name": "chat",
+        "completion": "您的退款已成功处理，退款单号为 REF-123，请留意账单。",
+        "gen_ai.usage.input_tokens": 150,
+        "gen_ai.usage.output_tokens": 30
+      }
+    ],
+    "business_state": { "db_refund_status": "SUCCESS" }
+  },
+  {
+    "trace_id": "trace-002-hallucination",
+    "description": "负面案例：假成功/幻觉（工具失败但回复成功）",
+    "input": "退款，订单号 12345",
+    "spans": [
+      {
+        "span_id": "s1",
+        "gen_ai.operation.name": "execute_tool",
+        "gen_ai.tool.name": "create_refund",
+        "tool_input": "{\"order_id\": \"12345\", \"amount\": \"full\"}",
+        "tool_output": "TypeError: amount must be a number",
+        "error": true
+      },
+      {
+        "span_id": "s2",
+        "gen_ai.operation.name": "chat",
+        "completion": "亲爱的用户，您的退款申请已成功受理，请留意账单。",
+        "gen_ai.usage.input_tokens": 1200,
+        "gen_ai.usage.output_tokens": 50
+      }
+    ],
+    "business_state": { "db_refund_status": "FAILED" }
+  },
+  {
+    "trace_id": "trace-003-loop",
+    "description": "负面案例：无状态推进的死循环",
+    "input": "帮我查订单 000",
+    "spans": [
+      {
+        "span_id": "s1",
+        "gen_ai.operation.name": "execute_tool",
+        "gen_ai.tool.name": "query_order",
+        "tool_input": "{\"order_id\": \"null\"}",
+        "tool_output": "Error: Order not found",
+        "error": true
+      },
+      {
+        "span_id": "s2",
+        "gen_ai.operation.name": "execute_tool",
+        "gen_ai.tool.name": "query_order",
+        "tool_input": "{\"order_id\": \"none\"}",
+        "tool_output": "Error: Order not found",
+        "error": true
+      },
+      {
+        "span_id": "s3",
+        "gen_ai.operation.name": "execute_tool",
+        "gen_ai.tool.name": "query_order",
+        "tool_input": "{\"order_id\": \"000_fake\"}",
+        "tool_output": "Error: Order not found",
+        "error": true
+      },
+      {
+        "span_id": "s4",
+        "gen_ai.operation.name": "chat",
+        "completion": "抱歉，我无法找到您的订单。",
+        "gen_ai.usage.input_tokens": 2500,
+        "gen_ai.usage.output_tokens": 20
+      }
+    ],
+    "business_state": { "db_refund_status": "N/A" }
+  },
+  {
+    "trace_id": "trace-004-cost-runaway",
+    "description": "负面案例：成本失控（任务成功，但疯狂消耗 Token）",
+    "input": "退款政策是什么？",
+    "spans": [
+      {
+        "span_id": "s1",
+        "gen_ai.operation.name": "chat",
+        "completion": "根据知识库内容（包含十万字），退款需要在7日内发起。",
+        "gen_ai.usage.input_tokens": 125000,
+        "gen_ai.usage.output_tokens": 40
+      }
+    ],
+    "business_state": { "db_refund_status": "N/A" }
+  }
+]

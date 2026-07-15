@@ -1,0 +1,42 @@
+# AI Agent 告警规则示例 (基于降维后的指标流)
+# 工具: Prometheus / Datadog 风格伪代码
+
+groups:
+- name: agent_reliability_alerts
+  rules:
+
+  # ===============================================
+  # 告警 1: 单次严重事件 (假成功/幻觉)
+  # ===============================================
+  - alert: AgentFalseSuccessDetected
+    expr: increase(agent_signal_false_success_total[5m]) > 0
+    labels:
+      severity: critical
+    annotations:
+      summary: "发现严重的假成功/幻觉事件"
+      description: "在过去 5 分钟内，有 Agent Trace 发生底层工具报错，但模型向用户生成了成功确认。请立即调出对应的 TraceID 排查业务状态。"
+      runbook: "https://internal.wiki/runbooks/agent-hallucination"
+
+  # ===============================================
+  # 告警 2: 窗口趋势告警 (死循环失控)
+  # ===============================================
+  - alert: AgentLoopRateHigh
+    expr: rate(agent_signal_suspected_loop_total[15m]) / rate(agent_run_total[15m]) > 0.05
+    labels:
+      severity: warning
+    annotations:
+      summary: "Agent 死循环率超过 5%"
+      description: "过去 15 分钟内，超过 5% 的 Agent Run 触发了无状态推进的循环拦截器。可能是上游业务 API 宕机导致大模型反复重试。"
+      runbook: "https://internal.wiki/runbooks/agent-loop"
+
+  # ===============================================
+  # 告警 3: 辅助 SLO 燃烧 (单位经济性/成本失控)
+  # ===============================================
+  - alert: AgentCostPerSuccessHigh
+    expr: histogram_quantile(0.95, rate(agent_cost_per_successful_task_usd_bucket[1h])) > 0.10
+    labels:
+      severity: warning
+    annotations:
+      summary: "成功任务的 P95 成本超预算"
+      description: "在过去 1 小时内，完成单次有效退款任务的 P95 API 成本超过了 $0.10。警惕大量上下文未被截断或使用了过高的模型系列。"
+      runbook: "https://internal.wiki/runbooks/agent-cost-runaway"
