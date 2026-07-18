@@ -1,0 +1,25 @@
+services:
+  # 1. Trace Backend: Arize Phoenix
+  phoenix:
+    image: arizephoenix/phoenix:19.0.0
+    ports:
+      - "127.0.0.1:6060:6006" # UI port (Phoenix default is 6006)
+    networks:
+      - o11y-net
+
+  # 2. Telemetry Router: OpenTelemetry Collector (Trace-only mode)
+  otel-collector:
+    image: otel/opentelemetry-collector:0.104.0
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./config/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "127.0.0.1:4319:4317" # OTLP gRPC Receiver
+    depends_on:
+      - phoenix
+    networks:
+      - o11y-net
+
+networks:
+  o11y-net:
+    driver: bridge

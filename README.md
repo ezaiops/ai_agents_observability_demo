@@ -7,12 +7,12 @@ Our goal is to provide **actionable, runnable, and copy-pasteable engineering as
 
 ## Directory Structure
 
-Parts 1 & 2 are theory-only articles, so this repository starts with the hands-on demos from Part 3.
-
+* **`01-02-theory/`**: Theoretical foundations from Parts 1 & 2 (No code).
 * **`03-tracing-instrumentation/`**: Demo for Part 3 — Instrumenting a LangGraph Agent with OpenTelemetry and printing raw Trace JSONs directly to the terminal.
 * **`04-llm-as-a-judge/`**: Demo for Part 4 — Using an LLM as a judge to evaluate offline trace data with structured Chain-of-Thought (CoT) and strict rubrics.
 * **`05-signals-slos-alerts/`**: Demo for Part 5 — Building an asynchronous observability pipeline. Detects infinite loops via pure Python rules (saving LLM API costs), aggregates costs, and demonstrates Prometheus-style alert rules.
+* **`06-end-to-end-platform/`**: Demo for Part 6 — Local reference architecture subset. Spins up OpenTelemetry Collector and Arize Phoenix to demonstrate the complete routing of Traces from the application layer via Collector to the dashboard.
 
 ## Quick Start
 
-All hands-on demos are self-contained within their respective directories. Please navigate to the desired directory, install its `requirements.txt`, configure the `.env` file as instructed, and run the scripts.
+All hands-on demos are self-contained within their respective directories. Please navigate to the desired directory, configure the `.env` file as instructed (an OpenAI-compatible API key is required), and run the scripts!
